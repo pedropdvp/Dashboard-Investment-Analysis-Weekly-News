@@ -1,0 +1,461 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Investment Week in Review</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* Layout: a weekly briefing. Masthead, week at a glance, numbers strip, then six section panels, each a summary with a "See more" drawer. */
+/* Dark is the default; the header button switches to light and is remembered per viewer. */
+:root {
+  --bg: #22101e; --panel: #321a2d; --fg: #f6ecf2; --muted: #c9abbd; --line: #4e2d46;
+  --accent: #f4b183; --accent-soft: #42213b;
+  --c-eq: #8fb8ff; --c-bonds: #7fd6c4; --c-macro: #f4b183; --c-cmdty: #e8d36e; --c-earn: #c7a6ff; --c-pm: #ff93b5;
+  --font-display: "Manrope", "Segoe UI", system-ui, sans-serif;
+  --font-body: "Manrope", "Segoe UI", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", Consolas, monospace;
+  color-scheme: dark;
+}
+:root[data-theme="light"] {
+  --bg: #f6f7f9; --panel: #ffffff; --fg: #16202b; --muted: #5a6573; --line: #dde2e8;
+  --accent: #8a2b5e; --accent-soft: #f6e6ef;
+  --c-eq: #2f5fb8; --c-bonds: #1c7d6c; --c-macro: #b2561c; --c-cmdty: #866f00; --c-earn: #6f45c2; --c-pm: #b3305f;
+  color-scheme: light;
+}
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+body {
+  background: var(--bg); color: var(--fg);
+  font-family: var(--font-body); font-size: 16px; line-height: 1.6;
+  transition: background-color .2s ease, color .2s ease;
+}
+.mast-right { display: inline-flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.theme-btn { text-transform: none; }
+.theme-btn svg { width: 14px; height: 14px; fill: none; stroke: currentColor; stroke-width: 2; }
+.wrap {
+  max-width: 1080px; margin: 0 auto;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 32px 64px;
+  display: grid; gap: 36px;
+}
+.mono { font-family: var(--font-mono); font-size: 12.5px; letter-spacing: .04em; }
+h1, h2, h3 { font-family: var(--font-display); text-wrap: balance; margin: 0; line-height: 1.15; }
+
+/* Masthead */
+.mast { display: grid; gap: 14px; border-bottom: 2px solid var(--fg); padding-bottom: 22px; }
+.mast-top { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 8px; color: var(--muted); text-transform: uppercase; }
+.mast h1 { font-size: clamp(36px, 6vw, 60px); font-weight: 800; letter-spacing: -.03em; }
+.mast h1 span { color: var(--accent); }
+.glance { font-size: 19px; max-width: 68ch; margin: 0; }
+.glance strong { font-weight: 600; }
+
+/* Numbers strip */
+.numbers { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 1px; background: var(--line); border: 1px solid var(--line); }
+.num { background: var(--panel); padding: 16px 16px 14px; display: grid; gap: 4px; align-content: start; }
+.num b { font-family: var(--font-display); font-size: 30px; font-weight: 700; font-variant-numeric: tabular-nums; line-height: 1.1; }
+.num p { margin: 0; font-size: 14.5px; line-height: 1.4; color: var(--muted); }
+.num .tag { text-transform: uppercase; }
+
+/* Section header row */
+.bar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; }
+.bar h2 { font-size: 15px; text-transform: uppercase; letter-spacing: .08em; font-weight: 700; }
+.chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.chip, .btn {
+  font-family: var(--font-mono); font-size: 12.5px; letter-spacing: .03em;
+  border: 1px solid var(--line); background: var(--panel); color: var(--fg);
+  padding: 7px 12px; border-radius: 999px; cursor: pointer; text-decoration: none;
+  display: inline-flex; align-items: center; gap: 7px;
+}
+.chip:hover, .btn:hover { border-color: var(--fg); }
+.chip:focus-visible, .btn:focus-visible, .more:focus-visible, a:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.dot { width: 9px; height: 9px; border-radius: 50%; background: var(--c); flex: none; }
+
+/* Topic panels */
+.topics { display: grid; gap: 20px; }
+.topic {
+  background: var(--panel); border: 1px solid var(--line); border-top: 4px solid var(--c);
+  padding: 22px clamp(16px, 3vw, 30px) 20px; display: grid; gap: 14px; scroll-margin-top: 16px;
+}
+.topic-head { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 6px 16px; }
+.topic h3 { font-size: clamp(24px, 3.4vw, 30px); font-weight: 700; letter-spacing: -.01em; }
+.pulse { display: inline-flex; align-items: center; gap: 8px; color: var(--muted); text-transform: uppercase; }
+.bars { display: inline-flex; gap: 3px; align-items: flex-end; }
+.bars i { width: 5px; background: var(--line); border-radius: 1px; }
+.bars i:nth-child(1) { height: 7px; } .bars i:nth-child(2) { height: 11px; } .bars i:nth-child(3) { height: 15px; }
+.bars i.on { background: var(--c); }
+.summary { margin: 0; max-width: 70ch; font-size: 18px; }
+.keys { margin: 0; padding: 0; list-style: none; display: grid; gap: 8px; max-width: 75ch; }
+.keys li { display: grid; grid-template-columns: 74px 1fr; gap: 12px; font-size: 16px; line-height: 1.5; }
+.keys .when { color: var(--muted); padding-top: 3px; }
+.more {
+  justify-self: start; font-family: var(--font-display); font-weight: 500; font-size: 15px;
+  background: transparent; color: var(--c); border: 1.5px solid var(--c); border-radius: 6px;
+  padding: 8px 14px; cursor: pointer; display: inline-flex; align-items: center; gap: 8px;
+}
+.more:hover { background: var(--c); color: var(--panel); }
+.more .arrow { transition: transform .2s ease; display: inline-block; }
+.more[aria-expanded="true"] .arrow { transform: rotate(180deg); }
+.deep { border-top: 1px dashed var(--line); padding-top: 18px; display: grid; gap: 18px; }
+.deep h4 { font-family: var(--font-display); font-size: 17px; margin: 0 0 6px; }
+.deep p { margin: 0; max-width: 72ch; font-size: 16.5px; }
+.deep ul { margin: 0; padding-left: 20px; display: grid; gap: 6px; max-width: 72ch; font-size: 16.5px; }
+.why { background: var(--accent-soft); padding: 14px 16px; border-left: 3px solid var(--c); }
+.why p { font-style: italic; }
+.sources { display: grid; gap: 6px; }
+.sources ol { margin: 0; padding-left: 20px; display: grid; gap: 4px; font-size: 14.5px; }
+.sources a { color: var(--accent); text-underline-offset: 2px; overflow-wrap: anywhere; }
+.sources .src-note { color: var(--muted); font-size: 13.5px; }
+
+/* Watch list and footer */
+.watch { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 14px; }
+.watch div { border-top: 2px solid var(--fg); padding-top: 10px; font-size: 16px; }
+.watch .mono { color: var(--muted); display: block; margin-bottom: 4px; text-transform: uppercase; }
+footer { color: var(--muted); font-size: 14.5px; display: grid; gap: 8px; border-top: 1px solid var(--line); padding-top: 18px; }
+footer p { margin: 0; max-width: 80ch; }
+
+@media (max-width: 520px) {
+  body { font-size: 16px; }
+  .keys li { grid-template-columns: 1fr; gap: 0; }
+  .num b { font-size: 26px; }
+}
+@media (prefers-reduced-motion: reduce) { .more .arrow { transition: none; } html { scroll-behavior: auto; } }
+html { scroll-behavior: smooth; }
+</style>
+</head><body>
+
+<div class="wrap">
+  <header class="mast">
+    <div class="mast-top mono"><span id="edition-label">Edition 1 · Week 43, 2026</span><span class="mast-right"><span id="edition-range">Covering Oct 13 – Oct 22, 2026</span><button class="btn theme-btn" id="theme-btn" type="button" aria-label="Switch to light mode"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg><span>Light</span></button></span></div>
+    <h1>Investment Week <span>in Review</span></h1>
+    <p class="glance" id="glance"></p>
+  </header>
+
+  <section aria-labelledby="numbers-h" style="display:grid;gap:12px">
+    <div class="bar"><h2 id="numbers-h">Numbers of the week</h2></div>
+    <div class="numbers" id="numbers"></div>
+  </section>
+
+  <section aria-labelledby="topics-h" style="display:grid;gap:16px">
+    <div class="bar">
+      <h2 id="topics-h">This week, topic by topic</h2>
+      <div class="chips" id="nav"></div>
+    </div>
+    <div style="display:flex;justify-content:flex-end"><button class="btn" id="toggle-all" type="button">Expand all analyses</button></div>
+    <div class="topics" id="topics"></div>
+  </section>
+
+  <section aria-labelledby="watch-h" style="display:grid;gap:14px">
+    <div class="bar"><h2 id="watch-h">What to watch next week</h2></div>
+    <div class="watch" id="watch"></div>
+  </section>
+
+  <footer>
+    <p><strong>How this is made.</strong> Every Monday at 08:00 Lisbon time, Claude reads financial newsrooms (Reuters, Bloomberg, Financial Times, Wall Street Journal, CNBC, Yahoo Finance), central bank releases (Federal Reserve, ECB, Bank of England, Bank of Japan), company results and SEC filings, and market data (US Treasury, CME FedWatch, EIA, World Gold Council, PitchBook), then rewrites this page. Each analysis lists its sources. Nothing here is investment advice.</p>
+    <p>Items marked <em>(reported)</em> come from press reports the company has not confirmed. Some figures reached us through daily news digests that summarize the primary report; those digests are listed as the source so you can trace them.</p>
+  </footer>
+</div>
+
+<script>
+// Weekly content. Each edition replaces this object; the rendering code below stays the same.
+const EDITION = {
+  glance: "<strong>Oil and inflation set the tone.</strong> US inflation came in hot at 3.7% and Brent crude went above $110 a barrel after attacks on Saudi oil sites, so markets now debate the next Fed hike, not a cut. The 10-year Treasury yield sat above 5% for most of the week, then had its biggest one-day drop in over two years on Oct 22. Stocks swung with the AI trade: the S&P 500 lost 1.1% on Oct 16, rebounded to within 1% of its record on Oct 21, and fell again after Meta and chip-equipment makers disappointed. Banks had a strong quarter, SpaceX posted its first profit as a public company, and Anthropic is preparing what could be the largest IPO ever.",
+  numbers: [
+    { v: "3.7%", t: "US inflation in September, up from 3.4% in August. Prices rose 0.6% in one month", s: "macro" },
+    { v: "$112", t: "Brent crude on Oct 22, its highest since May and up more than 50% since late February", s: "cmdty" },
+    { v: "5.02%", t: "10-year Treasury yield on Oct 22 after an 11 bp fall, the biggest one-day drop in over two years", s: "bonds" },
+    { v: "7,757", t: "S&P 500 close on Oct 21, within 0.8% of its Oct 6 record, before falling again on Oct 22", s: "eq" },
+    { v: "$64.6B", t: "Meta's quarterly revenue, up 26%. A $9.89B legal charge cut profit and the shares fell about 7%", s: "earn" },
+    { v: "~$2T", t: "Valuation Anthropic is reported to target, raising up to $100B. Its prospectus could be public on Oct 23", s: "pm" }
+  ],
+  topics: [
+    {
+      id: "eq", name: "Equities", c: "--c-eq", pulse: 3,
+      summary: "A choppy week driven by the AI trade. Hot inflation data on Oct 14 and an AI selloff pushed the S&P 500 down 1.1% to 7,659 on Oct 16. Chipmakers led a rebound on Oct 21, when the S&P closed at 7,757 and the Dow reached a one-month high. On Oct 22 stocks fell again: Meta and chip-equipment makers dropped after results, and the Nasdaq lost about 1.5% to 2% during the day.",
+      keys: [
+        ["Oct 16", "S&P 500 falls 1.09% to 7,659.44, breaking below the 7,700 level it had held, as the AI trade cracks again."],
+        ["Oct 21", "\"AI relief rally\": S&P 500 +0.58% to 7,757.17, Nasdaq +1.05%, chip index +1.97%. Dow at 52,856, a one-month high."],
+        ["Oct 22", "Nasdaq down about 1.5% to 2% midday. Chip-equipment stocks slide (Lam Research about -9%) and the VIX jumps 14% to about 19."]
+      ],
+      deep: [
+        { h: "A narrow market", list: [
+          "On Oct 21 the equal-weight S&P rose only 0.36%, and the Nasdaq had 216 new 52-week lows against 53 new highs.",
+          "Technology (+1.67%) led that day while communication services (-1.11%), real estate and consumer staples fell.",
+          "Berkshire Hathaway closed at a record on Oct 20 and is up about 7% since the S&P 500's Oct 6 record, a sign investors want defensive quality."
+        ]},
+        { h: "Around the world (Oct 21)", list: [
+          "South Korea's Kospi jumped 3.29% to 5,735.66, and Japan's Nikkei rose 0.85% to 64,621.",
+          "Europe: Stoxx 600 +0.92% to 644.49, DAX +1.35% to 25,645, FTSE 100 +0.19% to 10,752.88.",
+          "Hong Kong's Hang Seng fell 0.90% and Brazil's Ibovespa 0.86%."
+        ]},
+        { h: "Movers", p: "Super Micro rose 9.6% after raising its quarterly revenue outlook to $18.5 to $19.5 billion. Cybersecurity stocks (Zscaler, Okta, Cloudflare, CrowdStrike) gained 5% to 7% after a critical web flaw was disclosed. AT&T fell 6.5% and Netflix fell to a 52-week low (see Corporate earnings)." }
+      ],
+      why: "Index gains rest on a small group of AI-linked companies, so a single disappointing report can move the whole market. With inflation and oil pushing rates up, there is less room for valuations to expand, and investors are paying more for defensive names.",
+      sources: [
+        ["Capp Notes: Closing look, Oct 21", "https://cappnotes.substack.com/p/closing-look-wednesday-october-21"],
+        ["Yahoo Finance: Stock market today, Oct 21", "https://finance.yahoo.com/markets/live/stock-market-today-wednesday-october-21-dow-sp-500-nasdaq-100000105.html"],
+        ["Yahoo Finance: Stock market today, Oct 22", "https://finance.yahoo.com/markets/live/stock-market-today-thursday-october-22-dow-sp-500-nasdaq-tesla-meta-112217857.html"],
+        ["MetaTrading Club: After-hours market wraps, Oct 12 to 16", "https://www.metatradingclub.com/category/after-hours/"]
+      ]
+    },
+    {
+      id: "bonds", name: "Bonds and rates", c: "--c-bonds", pulse: 3,
+      summary: "US government bond yields stayed at levels last seen years ago. On Oct 21 the 10-year yield was 5.13%, the 30-year 5.42% and the 2-year 4.81%. On Oct 22 bonds rallied hard as stocks fell and investors looked for safety: the 10-year yield dropped 11 basis points to about 5.02%, its biggest one-day fall in more than two years.",
+      keys: [
+        ["Oct 14", "September inflation surprises at 3.7%. Traders add to bets that the Fed will raise rates again."],
+        ["Oct 21", "10-year at 5.13%, 30-year at 5.42%. The gap between 2-year and 10-year yields narrows to 32 bp."],
+        ["Oct 22", "10-year falls 11 bp to about 5.02% and 30-year to 5.32%. The 5-year falls even faster."]
+      ],
+      deep: [
+        { h: "What moved yields", list: [
+          "Higher oil prices feed inflation fears, which push yields up. A falling stock market sends money into bonds, which pushes yields down. Both happened this week.",
+          "Shorter maturities (2-year, 5-year) react most to Fed expectations. Prediction market Kalshi priced 88% odds of no change at the Oct 27 to 28 meeting and 11% for a hike.",
+          "The Treasury sold 5-year inflation-protected bonds (TIPS) on Oct 22."
+        ]},
+        { h: "Impact on borrowers", p: "US mortgage applications fell 5.3% in the latest week, and home-purchase demand is 18% below a year ago. A 10-year yield above 5% keeps mortgage rates high and makes bonds a real alternative to stocks for income investors." }
+      ],
+      why: "A 10-year yield around 5% is the anchor for mortgage rates, company borrowing costs and stock valuations. Whether this week's rally holds depends on oil and the Fed. If the Fed hikes again, short-term yields will rise further.",
+      sources: [
+        ["Capp Notes: Closing look, Oct 21 (Treasury levels)", "https://cappnotes.substack.com/p/closing-look-wednesday-october-21"],
+        ["Yahoo Finance: Stock market today, Oct 22 (10-year drop)", "https://finance.yahoo.com/markets/live/stock-market-today-thursday-october-22-dow-sp-500-nasdaq-tesla-meta-112217857.html"],
+        ["J.P. Morgan (via Chase): Will the Fed hike in October?", "https://www.chase.com/personal/investments/learning-and-insights/article/will-the-federal-reserve-hike-rates-at-october-2026-fomc-meeting"]
+      ]
+    },
+    {
+      id: "macro", name: "Central banks and macro", c: "--c-macro", pulse: 3,
+      summary: "US consumer prices rose 3.7% from a year earlier in September, up from 3.4%, and 0.6% in one month, the most since April. Core inflation, which leaves out food and energy, was calmer at 2.6%. The Fed, led by Kevin Warsh, raised rates in September for the first time in over three years and meets again on Oct 27 to 28. In Europe the ECB has raised its deposit rate to 2.50% and meets on Oct 29. UK inflation also beat forecasts at 3.5%.",
+      keys: [
+        ["Oct 14", "US September CPI: +3.7% a year, +0.6% a month. Core: +2.6% a year."],
+        ["Oct 21", "UK September inflation 3.5% against 3.4% expected. Bank Indonesia and the Bank of Israel hold rates."],
+        ["Oct 22", "US weekly jobless claims fall to 194,000, the fewest in three months."]
+      ],
+      deep: [
+        { h: "United States", list: [
+          "The Fed raised rates by a quarter point in September. J.P. Morgan expects a pause in October and about 50 bp of further hikes in total, with timing still open.",
+          "The job market is cooling: only 29,000 jobs were added in September and unemployment rose to 4.2%, even though layoffs (jobless claims) stay low.",
+          "The Fed is in its quiet period before the meeting, so no officials are speaking."
+        ]},
+        { h: "Europe", list: [
+          "The ECB raised its deposit rate in June and September, to 2.50%. Euro-area inflation reached 3.3% in August, the highest in three years, mostly from energy.",
+          "Futures had priced a third hike by December. Lagarde says decisions are made meeting by meeting."
+        ]},
+        { h: "Elsewhere", p: "Japanese exports grew 16.7% from a year earlier, below the 20.1% forecast. Bank Indonesia held at 5.75% but raised its deposit facility rate to 5.00%." }
+      ],
+      why: "An energy price shock is forcing central banks to raise rates while growth slows, the classic stagflation dilemma. Core inflation is still moderate, which is why the Fed may wait. A further jump in oil would make another hike more likely.",
+      sources: [
+        ["J.P. Morgan (via Chase): Will the Fed hike in October?", "https://www.chase.com/personal/investments/learning-and-insights/article/will-the-federal-reserve-hike-rates-at-october-2026-fomc-meeting"],
+        ["Admiral Markets: ECB meeting October 2026", "https://admiralmarkets.com/analytics/traders-blog/ecb-meeting-october-2026"],
+        ["Trading Economics: ECB expected to hike again", "https://tradingeconomics.com/euro-area/interest-rate/news/582626"],
+        ["Capp Notes: Closing look, Oct 21 (UK CPI, central banks)", "https://cappnotes.substack.com/p/closing-look-wednesday-october-21"],
+        ["Yahoo Finance: Stock market today, Oct 22 (jobless claims)", "https://finance.yahoo.com/markets/live/stock-market-today-thursday-october-22-dow-sp-500-nasdaq-tesla-meta-112217857.html"]
+      ]
+    },
+    {
+      id: "cmdty", name: "Commodities and currencies", c: "--c-cmdty", pulse: 3,
+      summary: "Oil is the market's main worry. Brent crude went above $110 a barrel on Oct 21 after attacks on a Saudi Aramco oil field and Dammam airport, and reached about $112 on Oct 22, its highest since May. It is up more than 50% since the Iran war began in late February. Gold traded near $4,150 an ounce before falling about 2.3% on Oct 22. The dollar was steady, while the yen stayed weak near 158 per dollar.",
+      keys: [
+        ["Oct 21", "Brent tops $110 intraday and closes at $108.82. US crude stocks fall 3.06M barrels, far more than expected."],
+        ["Oct 22", "Brent rises about 3% to near $112 on fears of new strikes on Iran after the US midterms on Nov 3."],
+        ["Oct 22", "Gold falls about 2.3% to roughly $4,053 an ounce."]
+      ],
+      deep: [
+        { h: "Energy", list: [
+          "WTI, the US benchmark, traded between about $97 and $100.",
+          "US natural gas fell about 6% to around $2.78, a reminder that the shock is in oil, not in all energy."
+        ]},
+        { h: "Metals", list: [
+          "Gold (December contract) was $4,150 on Oct 21 before the Oct 22 drop.",
+          "Copper traded near $6.54 per pound."
+        ]},
+        { h: "Currencies (Oct 21)", list: [
+          "Dollar index 101.69, nearly flat. Euro at $1.1233, pound at $1.3390.",
+          "Yen at 158.07 per dollar, close to levels where Japan has stepped in before.",
+          "The Mexican peso was the weakest major currency of the day, down 1.2% to 18.65 per dollar."
+        ]}
+      ],
+      why: "Oil above $110 feeds straight into inflation, which keeps central banks hiking and bond yields high. For portfolios, energy is acting as a hedge, while gold's sharp fall on Oct 22 shows it is not a one-way bet.",
+      sources: [
+        ["Capp Notes: Closing look, Oct 21 (commodities and FX)", "https://cappnotes.substack.com/p/closing-look-wednesday-october-21"],
+        ["Yahoo Finance: Stock market today, Oct 22 (oil, gold)", "https://finance.yahoo.com/markets/live/stock-market-today-thursday-october-22-dow-sp-500-nasdaq-tesla-meta-112217857.html"],
+        ["Yahoo Finance: Stock market today, Oct 21 (Saudi attack)", "https://finance.yahoo.com/markets/live/stock-market-today-wednesday-october-21-dow-sp-500-nasdaq-100000105.html"]
+      ]
+    },
+    {
+      id: "earn", name: "Corporate earnings", c: "--c-earn", pulse: 3,
+      summary: "About 70 S&P 500 companies reported this week. Banks set a strong start on Oct 13: Goldman Sachs beat forecasts on record advisory fees and a 72% jump in equities trading. Big tech was mixed. Meta's revenue rose 26% but a $9.89 billion legal charge cut profit and the shares fell about 7%. Tesla beat on profit, missed slightly on revenue and cut its 2026 spending plan. Netflix fell to a 52-week low on a weak outlook.",
+      keys: [
+        ["Oct 13", "Goldman Sachs earns $17.01 a share against $13.65 expected, on $18.68B of revenue. Wells Fargo falls 3%."],
+        ["Oct 21", "Netflix falls 5.3% to a 52-week low after a soft fourth-quarter forecast and lower ad revenue guidance."],
+        ["Oct 21", "Meta: revenue $64.6B (+26%), EPS $3.83. Tesla: revenue $28.05B, EPS $0.48, 2026 capex cut to about $20B."]
+      ],
+      deep: [
+        { h: "Big tech", list: [
+          "Meta beat the $63.4B revenue estimate but EPS was far below the $5.46 expected because of the legal charge. It also announced a new non-voting Class C share, effectively a 2-for-1 split.",
+          "Tesla's adjusted EBITDA was $3.90B against $3.66B expected. Investors weighed lower 2026 spending against higher 2027 to 2028 spending on Optimus robots, Cybercab and its Terafab chip plant.",
+          "Netflix guided fourth-quarter revenue to $13.44B against $13.51B expected and cut its 2026 ad revenue target from $3B to $2.7B."
+        ]},
+        { h: "Other notable reports", list: [
+          "IBM beat estimates and raised its free cash flow forecast. Capital One and Danaher also beat.",
+          "AT&T fell 6.5% even though it raised guidance: phone subscriber growth was slightly short and investors worry about satellite competition.",
+          "Lam Research beat and raised guidance but fell about 9% on Oct 22. Abbott cut its 2026 sales growth outlook to about 6%."
+        ]},
+        { h: "Asset managers", p: "Blackstone rose about 6% on Oct 22. Realized gains fell 34% from a year ago, but the company expects fourth-quarter performance fees to exceed all of the third quarter's realizations." }
+      ],
+      why: "Companies are mostly beating forecasts, but share prices react to outlooks and spending. Investors are punishing heavy AI spending without clear returns and rewarding firms that show discipline or rising fees.",
+      sources: [
+        ["24/7 Wall St: Goldman beats, JPMorgan flat, Wells Fargo falls", "https://247wallst.com/investing/2026/10/13/goldman-sachs-rises-on-equities-led-earnings-beat-jpmorgan-chase-treads-water-wells-fargo-declines-3/"],
+        ["Yahoo Finance: Futures after Meta and Tesla earnings", "https://finance.yahoo.com/markets/stocks/articles/dow-p-500-nasdaq-futures-031110870.html"],
+        ["Yahoo Finance: Stock market today, Oct 22 (Tesla, Meta, Blackstone, IBM)", "https://finance.yahoo.com/markets/live/stock-market-today-thursday-october-22-dow-sp-500-nasdaq-tesla-meta-112217857.html"],
+        ["Yahoo Finance: Stock market today, Oct 21 (Netflix, AT&T)", "https://finance.yahoo.com/markets/live/stock-market-today-wednesday-october-21-dow-sp-500-nasdaq-100000105.html"],
+        ["Tech Insider: A 70-company earnings week", "https://tech-insider.org/meta-tesla-netflix-earnings-week-70-companies-2026/"]
+      ]
+    },
+    {
+      id: "pm", name: "IPOs and private markets", c: "--c-pm", pulse: 3,
+      summary: "The biggest companies in AI are moving from private to public markets. Anthropic is set to publish its IPO prospectus as soon as Oct 23, aiming to raise up to $100 billion at about a $2 trillion valuation, which would be the largest IPO ever. SpaceX, which listed in June, reported its first profit as a public company. In private credit, several large funds that let investors withdraw quarterly are paying out only part of the requests.",
+      keys: [
+        ["Oct 21", "SpaceX: revenue up 161% to $14.6B and a $4.4B profit. Shares jump 7.8%, then give back about 7% on Oct 22 as up to 1.3B shares unlock."],
+        ["Oct 21", "Anthropic to file its S-1 publicly as soon as Friday, with a listing possible in November (reported)."],
+        ["Oct 2", "Blue Owl's OCIC credit fund gets $3.1B of withdrawal requests (16.8% of shares) and says it will meet about 30%."]
+      ],
+      deep: [
+        { h: "Anthropic", list: [
+          "It filed confidentially in June. The Financial Times reports third-quarter revenue of $16.8B, up from $11.5B in the second quarter. The company says it is profitable on an adjusted basis.",
+          "The WSJ reported a net loss of more than $80B in the first half of 2026, so the prospectus will be read closely for how losses and revenue are measured.",
+          "OpenAI's IPO is now expected in early 2027."
+        ]},
+        { h: "SpaceX", list: [
+          "Its AI unit (\"Super Intelligence\") made $7.6B of revenue, more than Starlink and over half of the total.",
+          "Elon Musk said SpaceX and Tesla have set up special committees to study a possible merger."
+        ]},
+        { h: "Private credit", list: [
+          "Blue Owl Technology Income Corp. had requests for about 39% of shares and expects to meet about 13%.",
+          "Ares Strategic Income Fund paid about 38% of September requests. Goldman Sachs and Fidelity's private credit funds expect to pay 100%.",
+          "Results for Apollo, HPS and Blackstone's BCRED funds are expected in early November."
+        ]}
+      ],
+      why: "Public investors are being asked to absorb trillions of dollars of AI company shares at once, which can pull money away from the rest of the market. In private credit, the payout limits show that \"semi-liquid\" funds sold to wealthy individuals can lock up money exactly when people want it back.",
+      sources: [
+        ["Yahoo Finance: Anthropic to file for IPO as early as Friday", "https://finance.yahoo.com/markets/article/anthropic-to-publicly-file-for-ipo-as-early-as-friday-sources-say-135343841.html"],
+        ["Yahoo Finance: Stock market today, Oct 21 (SpaceX results)", "https://finance.yahoo.com/markets/live/stock-market-today-wednesday-october-21-dow-sp-500-nasdaq-100000105.html"],
+        ["Capp Notes: Closing look, Oct 21 (SpaceX profit)", "https://cappnotes.substack.com/p/closing-look-wednesday-october-21"],
+        ["CrowdfundedWealth: Private credit redemptions tracker, October 2026", "https://www.crowdfundedwealth.com/articles/private-credit-fund-redemptions-tracker-2026"],
+        ["TechJack: Anthropic's confidential S-1 (June)", "https://techjacksolutions.com/ai-brief/anthropics-s-1-is-now-with-the-sec-the-47b-arr-accounting-qu/"]
+      ]
+    }
+  ],
+  watch: [
+    ["Fed, Oct 27 to 28", "Markets expect no change (about 88%), but any hint of another hike would push short-term yields up."],
+    ["ECB, Oct 29", "Whether the ECB raises its deposit rate a third time this year, to 2.75%."],
+    ["Anthropic prospectus", "The first full look at its revenue, losses and IPO size, and whether a November listing holds."],
+    ["Oil", "Brent above $110 and the risk of new strikes on Iran around the Nov 3 US midterm elections."]
+  ]
+};
+
+// Sections always appear in alphabetical order
+EDITION.topics.sort((a, b) => a.name.localeCompare(b.name));
+const pulseLabel = ["", "Quiet week", "Active week", "Very active week"];
+const byId = Object.fromEntries(EDITION.topics.map(t => [t.id, t]));
+const el = (tag, cls, text) => { const n = document.createElement(tag); if (cls) n.className = cls; if (text != null) n.textContent = text; return n; };
+
+document.getElementById("glance").innerHTML = EDITION.glance;
+
+const nums = document.getElementById("numbers");
+EDITION.numbers.forEach(n => {
+  const t = byId[n.s];
+  const box = el("div", "num");
+  box.style.setProperty("--c", `var(${t.c})`);
+  const tag = el("a", "mono tag");
+  tag.href = "#" + t.id; tag.style.color = `var(${t.c})`; tag.style.textDecoration = "none"; tag.textContent = t.name;
+  box.append(tag, el("b", null, n.v), el("p", null, n.t));
+  nums.append(box);
+});
+
+const nav = document.getElementById("nav");
+const topics = document.getElementById("topics");
+EDITION.topics.forEach(t => {
+  const chip = el("a", "chip");
+  chip.href = "#" + t.id; chip.style.setProperty("--c", `var(${t.c})`);
+  chip.append(el("span", "dot"), document.createTextNode(t.name));
+  nav.append(chip);
+
+  const art = el("article", "topic"); art.id = t.id;
+  art.style.setProperty("--c", `var(${t.c})`);
+  const head = el("div", "topic-head");
+  const pulse = el("span", "pulse mono");
+  const bars = el("span", "bars"); bars.setAttribute("aria-hidden", "true");
+  for (let i = 1; i <= 3; i++) { const b = el("i"); if (i <= t.pulse) b.className = "on"; bars.append(b); }
+  pulse.append(bars, document.createTextNode(pulseLabel[t.pulse]));
+  head.append(el("h3", null, t.name), pulse);
+
+  const keys = el("ul", "keys");
+  t.keys.forEach(([w, txt]) => { const li = el("li"); li.append(el("span", "when mono", w), el("span", null, txt)); keys.append(li); });
+
+  const btn = el("button", "more"); btn.type = "button";
+  btn.setAttribute("aria-expanded", "false"); btn.setAttribute("aria-controls", t.id + "-deep");
+  const label = el("span", null, "See more"); const arrow = el("span", "arrow", "▾"); arrow.setAttribute("aria-hidden", "true");
+  btn.append(label, arrow);
+
+  const deep = el("div", "deep"); deep.id = t.id + "-deep"; deep.hidden = true;
+  t.deep.forEach(d => {
+    const blk = el("div"); blk.append(el("h4", null, d.h));
+    if (d.p) blk.append(el("p", null, d.p));
+    if (d.list) { const ul = el("ul"); d.list.forEach(x => ul.append(el("li", null, x))); blk.append(ul); }
+    deep.append(blk);
+  });
+  const why = el("div", "why"); why.append(el("h4", null, "Why it matters"), el("p", null, t.why)); deep.append(why);
+  const src = el("div", "sources"); src.append(el("h4", null, "Sources"));
+  const ol = el("ol");
+  t.sources.forEach(([name, url]) => { const li = el("li"); const a = el("a", null, name); a.href = url; a.target = "_blank"; a.rel = "noopener"; li.append(a); ol.append(li); });
+  src.append(ol); deep.append(src);
+
+  btn.addEventListener("click", () => setOpen(t.id, deep.hidden));
+  art.append(head, el("p", "summary", t.summary), keys, btn, deep);
+  topics.append(art);
+});
+
+function setOpen(id, open) {
+  const deep = document.getElementById(id + "-deep");
+  const btn = document.querySelector(`[aria-controls="${id}-deep"]`);
+  deep.hidden = !open;
+  btn.setAttribute("aria-expanded", String(open));
+  btn.firstChild.textContent = open ? "Show less" : "See more";
+  syncAll();
+}
+const toggleAll = document.getElementById("toggle-all");
+function syncAll() {
+  const allOpen = EDITION.topics.every(t => !document.getElementById(t.id + "-deep").hidden);
+  toggleAll.textContent = allOpen ? "Collapse all analyses" : "Expand all analyses";
+}
+toggleAll.addEventListener("click", () => {
+  const allOpen = EDITION.topics.every(t => !document.getElementById(t.id + "-deep").hidden);
+  EDITION.topics.forEach(t => setOpen(t.id, !allOpen));
+});
+
+const watch = document.getElementById("watch");
+EDITION.watch.forEach(([k, v]) => { const d = el("div"); d.append(el("span", "mono", k), document.createTextNode(v)); watch.append(d); });
+
+// Light / dark toggle: dark by default, choice remembered in this browser only
+const themeBtn = document.getElementById("theme-btn");
+const sunIcon = '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>';
+const moonIcon = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>';
+function applyTheme(mode) {
+  document.documentElement.setAttribute("data-theme", mode);
+  const next = mode === "dark" ? "light" : "dark";
+  themeBtn.innerHTML = (next === "light" ? sunIcon : moonIcon) + `<span>${next === "light" ? "Light" : "Dark"}</span>`;
+  themeBtn.setAttribute("aria-label", `Switch to ${next} mode`);
+}
+let savedTheme = "dark";
+try { savedTheme = localStorage.getItem("investweekly-theme") || "dark"; } catch (e) {}
+applyTheme(savedTheme === "light" ? "light" : "dark");
+themeBtn.addEventListener("click", () => {
+  const mode = document.documentElement.getAttribute("data-theme") === "dark" ? "light" : "dark";
+  applyTheme(mode);
+  try { localStorage.setItem("investweekly-theme", mode); } catch (e) {}
+});
+
+// Open a section's analysis when the link points at it
+const h = location.hash.slice(1);
+if (byId[h]) { setOpen(h, true); document.getElementById(h).scrollIntoView(); }
+</script>
+</body></html>
