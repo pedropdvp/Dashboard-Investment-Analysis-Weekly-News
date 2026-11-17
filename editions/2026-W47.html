@@ -1,0 +1,419 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Investment Week in Review</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* Layout: a weekly briefing. Masthead, week at a glance, numbers strip, then six section panels, each a summary with a "See more" drawer. */
+/* Dark is the default; the header button switches to light and is remembered per viewer. */
+:root {
+  --bg: #22101e; --panel: #321a2d; --fg: #f6ecf2; --muted: #c9abbd; --line: #4e2d46;
+  --accent: #f4b183; --accent-soft: #42213b;
+  --c-eq: #8fb8ff; --c-bonds: #7fd6c4; --c-macro: #f4b183; --c-cmdty: #e8d36e; --c-earn: #c7a6ff; --c-pm: #ff93b5;
+  --font-display: "Manrope", "Segoe UI", system-ui, sans-serif;
+  --font-body: "Manrope", "Segoe UI", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", Consolas, monospace;
+  color-scheme: dark;
+}
+:root[data-theme="light"] {
+  --bg: #f6f7f9; --panel: #ffffff; --fg: #16202b; --muted: #5a6573; --line: #dde2e8;
+  --accent: #8a2b5e; --accent-soft: #f6e6ef;
+  --c-eq: #2f5fb8; --c-bonds: #1c7d6c; --c-macro: #b2561c; --c-cmdty: #866f00; --c-earn: #6f45c2; --c-pm: #b3305f;
+  color-scheme: light;
+}
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+body {
+  background: var(--bg); color: var(--fg);
+  font-family: var(--font-body); font-size: 16px; line-height: 1.6;
+  transition: background-color .2s ease, color .2s ease;
+}
+.mast-right { display: inline-flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.theme-btn { text-transform: none; }
+.theme-btn svg { width: 14px; height: 14px; fill: none; stroke: currentColor; stroke-width: 2; }
+.wrap {
+  max-width: 1080px; margin: 0 auto;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 32px 64px;
+  display: grid; gap: 36px;
+}
+.mono { font-family: var(--font-mono); font-size: 12.5px; letter-spacing: .04em; }
+h1, h2, h3 { font-family: var(--font-display); text-wrap: balance; margin: 0; line-height: 1.15; }
+
+/* Masthead */
+.mast { display: grid; gap: 14px; border-bottom: 2px solid var(--fg); padding-bottom: 22px; }
+.mast-top { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 8px; color: var(--muted); text-transform: uppercase; }
+.mast h1 { font-size: clamp(36px, 6vw, 60px); font-weight: 800; letter-spacing: -.03em; }
+.mast h1 span { color: var(--accent); }
+.glance { font-size: 19px; max-width: 68ch; margin: 0; }
+.glance strong { font-weight: 600; }
+
+/* Numbers strip */
+.numbers { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 1px; background: var(--line); border: 1px solid var(--line); }
+.num { background: var(--panel); padding: 16px 16px 14px; display: grid; gap: 4px; align-content: start; }
+.num b { font-family: var(--font-display); font-size: 30px; font-weight: 700; font-variant-numeric: tabular-nums; line-height: 1.1; }
+.num p { margin: 0; font-size: 14.5px; line-height: 1.4; color: var(--muted); }
+.num .tag { text-transform: uppercase; }
+
+/* Section header row */
+.bar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; }
+.bar h2 { font-size: 15px; text-transform: uppercase; letter-spacing: .08em; font-weight: 700; }
+.chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.chip, .btn {
+  font-family: var(--font-mono); font-size: 12.5px; letter-spacing: .03em;
+  border: 1px solid var(--line); background: var(--panel); color: var(--fg);
+  padding: 7px 12px; border-radius: 999px; cursor: pointer; text-decoration: none;
+  display: inline-flex; align-items: center; gap: 7px;
+}
+.chip:hover, .btn:hover { border-color: var(--fg); }
+.chip:focus-visible, .btn:focus-visible, .more:focus-visible, a:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.dot { width: 9px; height: 9px; border-radius: 50%; background: var(--c); flex: none; }
+
+/* Topic panels */
+.topics { display: grid; gap: 20px; }
+.topic {
+  background: var(--panel); border: 1px solid var(--line); border-top: 4px solid var(--c);
+  padding: 22px clamp(16px, 3vw, 30px) 20px; display: grid; gap: 14px; scroll-margin-top: 16px;
+}
+.topic-head { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 6px 16px; }
+.topic h3 { font-size: clamp(24px, 3.4vw, 30px); font-weight: 700; letter-spacing: -.01em; }
+.pulse { display: inline-flex; align-items: center; gap: 8px; color: var(--muted); text-transform: uppercase; }
+.bars { display: inline-flex; gap: 3px; align-items: flex-end; }
+.bars i { width: 5px; background: var(--line); border-radius: 1px; }
+.bars i:nth-child(1) { height: 7px; } .bars i:nth-child(2) { height: 11px; } .bars i:nth-child(3) { height: 15px; }
+.bars i.on { background: var(--c); }
+.summary { margin: 0; max-width: 70ch; font-size: 18px; }
+.keys { margin: 0; padding: 0; list-style: none; display: grid; gap: 8px; max-width: 75ch; }
+.keys li { display: grid; grid-template-columns: 74px 1fr; gap: 12px; font-size: 16px; line-height: 1.5; }
+.keys .when { color: var(--muted); padding-top: 3px; }
+.more {
+  justify-self: start; font-family: var(--font-display); font-weight: 500; font-size: 15px;
+  background: transparent; color: var(--c); border: 1.5px solid var(--c); border-radius: 6px;
+  padding: 8px 14px; cursor: pointer; display: inline-flex; align-items: center; gap: 8px;
+}
+.more:hover { background: var(--c); color: var(--panel); }
+.more .arrow { transition: transform .2s ease; display: inline-block; }
+.more[aria-expanded="true"] .arrow { transform: rotate(180deg); }
+.deep { border-top: 1px dashed var(--line); padding-top: 18px; display: grid; gap: 18px; }
+.deep h4 { font-family: var(--font-display); font-size: 17px; margin: 0 0 6px; }
+.deep p { margin: 0; max-width: 72ch; font-size: 16.5px; }
+.deep ul { margin: 0; padding-left: 20px; display: grid; gap: 6px; max-width: 72ch; font-size: 16.5px; }
+.why { background: var(--accent-soft); padding: 14px 16px; border-left: 3px solid var(--c); }
+.why p { font-style: italic; }
+.sources { display: grid; gap: 6px; }
+.sources ol { margin: 0; padding-left: 20px; display: grid; gap: 4px; font-size: 14.5px; }
+.sources a { color: var(--accent); text-underline-offset: 2px; overflow-wrap: anywhere; }
+.sources .src-note { color: var(--muted); font-size: 13.5px; }
+
+/* Watch list and footer */
+.watch { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 14px; }
+.watch div { border-top: 2px solid var(--fg); padding-top: 10px; font-size: 16px; }
+.watch .mono { color: var(--muted); display: block; margin-bottom: 4px; text-transform: uppercase; }
+footer { color: var(--muted); font-size: 14.5px; display: grid; gap: 8px; border-top: 1px solid var(--line); padding-top: 18px; }
+footer p { margin: 0; max-width: 80ch; }
+
+@media (max-width: 520px) {
+  body { font-size: 16px; }
+  .keys li { grid-template-columns: 1fr; gap: 0; }
+  .num b { font-size: 26px; }
+}
+@media (prefers-reduced-motion: reduce) { .more .arrow { transition: none; } html { scroll-behavior: auto; } }
+html { scroll-behavior: smooth; }
+</style>
+</head><body>
+
+<div class="wrap">
+  <header class="mast">
+    <div class="mast-top mono"><span id="edition-label">Edition 4 · Week 47, 2026</span><span class="mast-right"><span id="edition-range">Covering Nov 9 – Nov 15, 2026</span><button class="btn theme-btn" id="theme-btn" type="button" aria-label="Switch to light mode"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg><span>Light</span></button></span></div>
+    <h1>Investment Week <span>in Review</span></h1>
+    <p class="glance" id="glance"></p>
+  </header>
+
+  <section aria-labelledby="numbers-h" style="display:grid;gap:12px">
+    <div class="bar"><h2 id="numbers-h">Numbers of the week</h2></div>
+    <div class="numbers" id="numbers"></div>
+  </section>
+
+  <section aria-labelledby="topics-h" style="display:grid;gap:16px">
+    <div class="bar">
+      <h2 id="topics-h">This week, topic by topic</h2>
+      <div class="chips" id="nav"></div>
+    </div>
+    <div style="display:flex;justify-content:flex-end"><button class="btn" id="toggle-all" type="button">Expand all analyses</button></div>
+    <div class="topics" id="topics"></div>
+  </section>
+
+  <section aria-labelledby="watch-h" style="display:grid;gap:14px">
+    <div class="bar"><h2 id="watch-h">What to watch next week</h2></div>
+    <div class="watch" id="watch"></div>
+  </section>
+
+  <footer>
+    <p><strong>How this is made.</strong> Every Monday at 08:00 Lisbon time, Claude reads financial newsrooms (Reuters, Bloomberg, Financial Times, Wall Street Journal, CNBC, Yahoo Finance), central bank releases (Federal Reserve, ECB, Bank of England, Bank of Japan), company results and SEC filings, and market data (US Treasury, CME FedWatch, EIA, World Gold Council, PitchBook), then rewrites this page. Each analysis lists its sources. Nothing here is investment advice.</p>
+    <p>Items marked <em>(reported)</em> come from press reports the company has not confirmed. Some figures reached us through daily news digests that summarize the primary report; those digests are listed as the source so you can trace them.</p>
+  </footer>
+</div>
+
+<script>
+// Weekly content. Each edition replaces this object; the rendering code below stays the same.
+const EDITION = {
+  glance: "<strong>Stocks rallied while bond yields jumped.</strong> The S&P 500 rose 2.5% to 7,562, its best week since August, and all 11 sectors gained. Chipmakers soared: the semiconductor index rose 8%, led by AMD and Broadcom. Nvidia was the exception and fell 12.8% after Jensen Huang resigned as CEO on Nov 12. Inflation stayed hot. October consumer prices rose 0.4% and producer prices are up 6.5% from a year ago, so markets now fully expect a Fed hike in December. The 10-year Treasury yield climbed 30 basis points to 5.15%, and the dollar gained 1.1%. Oil, gold and bitcoin all fell.",
+  numbers: [
+    { v: "+2.51%", t: "S&P 500 for the week, to 7,561.67, its best week since Aug 7. Nasdaq +2.27%, Dow +2.07%", s: "eq" },
+    { v: "5.15%", t: "10-year Treasury yield on Nov 13, up about 30 bp in a week and its highest close since Oct 14", s: "bonds" },
+    { v: "+0.4%", t: "October consumer prices month on month; core +0.3%, both above forecasts", s: "macro" },
+    { v: "-4.6%", t: "Gold for the week (GLD). Silver fell about 6% and Brent 2.5% to about $96", s: "cmdty" },
+    { v: "+24.7%", t: "CoreWeave's one-day jump on Nov 11 after it raised its revenue forecast and showed a $132.5B backlog", s: "earn" },
+    { v: "-12.8%", t: "Nvidia for the week after CEO Jensen Huang resigned, its worst week since April 2025", s: "pm" }
+  ],
+  topics: [
+    {
+      id: "eq", name: "Equities", c: "--c-eq", pulse: 3,
+      summary: "A broad rally lifted almost every stock. The S&P 500 rose 2.51% to 7,561.67, the Nasdaq 2.27% and the Dow 2.07%, and 401 of the 502 S&P stocks gained. Energy led the sectors (+5.4%), followed by industrials and communication services. The VIX fear gauge fell from 25.6 to 19.3. The big exception was Nvidia, which lost 12.8% after its CEO resigned; without it the S&P 500 would have risen about 3.7%.",
+      keys: [
+        ["Nov 10", "Hot October inflation data. Nvidia falls 5.5%."],
+        ["Nov 11", "Chip stocks rally after CoreWeave's results; Micron +11.9%, Oracle +8.8%."],
+        ["Nov 12", "Nvidia says Jensen Huang has resigned; CFO Colette Kress becomes interim CEO."]
+      ],
+      deep: [
+        { h: "Chips without Nvidia", list: [
+          "The semiconductor index rose 8.1%. AMD gained 18.9% and Broadcom 18.2%, the S&P 500's best performers, though both fell on Friday.",
+          "Nvidia closed at $162.85, its lowest since July 2025. Its release gave no reason for Huang's exit."
+        ]},
+        { h: "Year to date", list: [
+          "S&P 500 +10.5%, Nasdaq +8.2%, Russell 2000 +12.4%.",
+          "Energy is the best sector this year (+48%); communication services the worst (-6.8%)."
+        ]}
+      ],
+      why: "The rally was broad, which is healthier than gains driven by a few giants. But Nvidia is the largest weight in many index funds, and leadership uncertainty there adds a new risk.",
+      sources: [
+        ["Portfolio Terminal: Week in review, Nov 13", "https://portfolio-terminal.com/blog/stock-market-week-in-review-november-13-2026"],
+        ["The Glass Desk: Weekly market review, Nov 13", "https://theglassdesk.substack.com/p/weekly-market-review-nov-13-2026"]
+      ]
+    },
+    {
+      id: "bonds", name: "Bonds and rates", c: "--c-bonds", pulse: 3,
+      summary: "Bonds sold off hard on the inflation data. The 10-year Treasury yield rose about 30 basis points to 5.15%, its highest close since mid-October, and stayed above 5% for the last two sessions. The 2-year yield jumped 37 bp, including a 17 bp move on CPI day, as investors priced in more Fed hikes. The 5-year rose about 33 bp to near 4.98% and the 30-year about 22 bp to 5.48%. Long-term bond funds (TLT) lost 3.1%.",
+      keys: [
+        ["Nov 10", "2-year yield jumps from 4.56% to 4.73% after the CPI report."],
+        ["Nov 11", "Bond market closed for Veterans Day."],
+        ["Nov 13", "10-year closes at 5.15%, up from 4.86% a week earlier."]
+      ],
+      deep: [
+        { h: "Shape of the curve", p: "Short yields rose more than long ones, so the gap between 2-year and 10-year yields narrowed from 35 to 27 bp. That is what happens when markets expect the central bank to tighten." },
+        { h: "Volatility", p: "The MOVE index of expected bond-market swings rose to about 99 from 93, while stock volatility fell. Bond investors are more nervous than equity investors." }
+      ],
+      why: "A 10-year yield above 5% pushes up mortgage and corporate borrowing costs and makes bonds a stronger competitor to stocks. If inflation stays hot, yields may keep rising.",
+      sources: [
+        ["Portfolio Terminal: Week in review (yields)", "https://portfolio-terminal.com/blog/stock-market-week-in-review-november-13-2026"],
+        ["The Glass Desk: Weekly market review (curve, MOVE)", "https://theglassdesk.substack.com/p/weekly-market-review-nov-13-2026"]
+      ]
+    },
+    {
+      id: "macro", name: "Central banks and macro", c: "--c-macro", pulse: 3,
+      summary: "Inflation data came in hot. Consumer prices rose 0.4% in October and core prices 0.3%, both a tenth above forecasts. No annual rate was published because data for October 2025 was not collected during last year's government shutdown. Producer prices rose 0.3% in the month and 6.5% from a year earlier, the most since November 2022. Fed officials turned more hawkish, and futures now fully price a rate hike at the Dec 8–9 meeting.",
+      keys: [
+        ["Nov 10", "October CPI +0.4% m/m, core +0.3%. Food +0.5%, shelter +0.3%."],
+        ["Nov 12", "Dallas Fed's Lorie Logan says at least two more quarter-point hikes are needed."],
+        ["Nov 13", "October PPI +0.3% m/m and +6.5% y/y; core +4.9% y/y."]
+      ],
+      deep: [
+        { h: "What the Fed is saying", list: [
+          "Governor Christopher Waller said before the CPI report that a core reading of 0.3% or more would justify considering a half-point hike in December. Core came in at 0.3%.",
+          "The Fed's range is 3.75%–4.00%. A quarter-point hike would take it to 4.00%–4.25%."
+        ]},
+        { h: "Coming data", list: [
+          "This week: retail sales and industrial production (Nov 17), Fed minutes (Nov 18), jobless claims (Nov 19), final UMich sentiment (Nov 20).",
+          "November CPI comes out on Dec 10, the day after the Fed decides."
+        ]}
+      ],
+      why: "With inflation running hot and officials openly discussing bigger hikes, borrowing costs are more likely to rise than fall in the coming months.",
+      sources: [
+        ["Portfolio Terminal: Week in review (CPI)", "https://portfolio-terminal.com/blog/stock-market-week-in-review-november-13-2026"],
+        ["The Glass Desk: Weekly market review (PPI, Fed speakers)", "https://theglassdesk.substack.com/p/weekly-market-review-nov-13-2026"]
+      ]
+    },
+    {
+      id: "cmdty", name: "Commodities and currencies", c: "--c-cmdty", pulse: 2,
+      summary: "A stronger dollar and higher yields weighed on commodities. The dollar index rose 1.1% to 103.4. Oil fell for a second week: Brent lost about 2.5% to near $96 and US crude about 2.5% to near $89, after a 5.9% drop in Brent on Monday alone. Gold fell about 4.6% and silver about 6%. Bitcoin fell almost 10% to about $68,200 and ether about 14%.",
+      keys: [
+        ["Nov 9", "Brent falls 5.9% in one session."],
+        ["Nov 10", "US crude touches about $86 before recovering."],
+        ["Nov 13", "Dollar index ends at 103.4, up 1.1% on the week."]
+      ],
+      deep: [
+        { h: "Oil has fallen fast", p: "Brent was near $118 at the end of October. It has since dropped about 18%, which will ease some inflation pressure in the coming months, even though it does not yet show in October's data." },
+        { h: "Gold and crypto", list: [
+          "Higher real yields and a stronger dollar make gold, which pays no interest, less attractive.",
+          "Bitcoin is down about 30% from early October and has not recovered from the Binance hack."
+        ]}
+      ],
+      why: "Cheaper oil is good news for inflation and consumers. The rising dollar makes US assets more expensive for foreign buyers and weighs on emerging markets.",
+      sources: [
+        ["Portfolio Terminal: Week in review (oil, dollar)", "https://portfolio-terminal.com/blog/stock-market-week-in-review-november-13-2026"],
+        ["The Glass Desk: Weekly market review (gold, bitcoin)", "https://theglassdesk.substack.com/p/weekly-market-review-nov-13-2026"]
+      ]
+    },
+    {
+      id: "earn", name: "Corporate earnings", c: "--c-earn", pulse: 2,
+      summary: "Earnings season is nearly over and the week was quiet, but one result moved the AI trade. CoreWeave, which rents out AI computing power, nearly tripled its revenue to $3.66 billion and raised its full-year forecast to $13.0–13.3 billion. It still lost $709 million, mostly because of $846 million in interest costs. The shares jumped 24.7% the next day. Nvidia reports on Nov 17, its first results under an interim CEO.",
+      keys: [
+        ["Nov 10", "CoreWeave Q3 revenue $3.66B (from $1.37B); backlog $132.5B."],
+        ["Nov 11", "CoreWeave +24.7%; Micron +11.9% and Oracle +8.8% on the AI rebound."],
+        ["Nov 13", "Nvidia confirms it will report as planned on Nov 17."]
+      ],
+      deep: [
+        { h: "CoreWeave in detail", list: [
+          "The $132.5B backlog shows strong demand for AI computing, but heavy debt makes the business sensitive to interest rates.",
+          "The stock ended the week up 14.5% at $53.13 after giving back some gains."
+        ]},
+        { h: "Next week's reports", list: [
+          "Nvidia, Home Depot and Disney on Nov 17; Walmart on Nov 19.",
+          "Nvidia's results and outlook will show whether the CEO change affects customer demand."
+        ]}
+      ],
+      why: "Demand for AI infrastructure is still growing quickly. The question for investors is cost: companies that rely on borrowing are more exposed now that yields are back above 5%.",
+      sources: [
+        ["Portfolio Terminal: Week in review (CoreWeave)", "https://portfolio-terminal.com/blog/stock-market-week-in-review-november-13-2026"],
+        ["The Glass Desk: Weekly market review (earnings calendar)", "https://theglassdesk.substack.com/p/weekly-market-review-nov-13-2026"]
+      ]
+    },
+    {
+      id: "pm", name: "IPOs and private markets", c: "--c-pm", pulse: 2,
+      summary: "The biggest corporate governance story was Nvidia. Jensen Huang, who co-founded the company, resigned as president, CEO and director, and Harvey Jones became its first independent board chair. The company gave no reason. In IPOs, AI cloud company Nscale updated its filing, showing a nine-month net loss of $1.69 billion on $307.5 million of revenue and warning it will need more funding in 2027, partly for capacity tied to its Anthropic GPU agreements. Anthropic's own IPO terms have not yet been published.",
+      keys: [
+        ["Nov 12", "Nvidia announces Huang's resignation; Colette Kress becomes interim CEO."],
+        ["Nov 12", "Nscale files an amended S-1 with a $1.69B nine-month loss."],
+        ["Nov 13", "Anthropic's IPO price range is still pending."]
+      ],
+      deep: [
+        { h: "Why it matters for AI listings", list: [
+          "Nscale's filing shows how much capital AI infrastructure needs before it turns a profit.",
+          "Rising yields and Nvidia's turmoil make it a harder moment to price large AI IPOs, including Anthropic's."
+        ]},
+        { h: "What to look for", p: "Anthropic's price range and share count, Nvidia's search for a permanent CEO, and whether Nscale moves ahead with its listing." }
+      ],
+      why: "AI companies need large amounts of outside money. Investor appetite for these listings is a good test of whether the AI boom can keep funding itself.",
+      sources: [
+        ["The Glass Desk: Weekly market review (Nvidia, Nscale)", "https://theglassdesk.substack.com/p/weekly-market-review-nov-13-2026"],
+        ["Portfolio Terminal: Week in review (Nvidia)", "https://portfolio-terminal.com/blog/stock-market-week-in-review-november-13-2026"]
+      ]
+    }
+  ],
+  watch: [
+    ["Nvidia results, Nov 17", "First report under an interim CEO. Watch guidance and any comment on the CEO search."],
+    ["Retail sales, Nov 17", "October spending will show whether high prices are hurting consumers."],
+    ["Fed minutes, Nov 18", "How many officials want faster or bigger hikes."],
+    ["Anthropic IPO terms", "The price range and share count, which set the size and valuation of the deal."]
+  ]
+};
+
+// Sections always appear in alphabetical order
+EDITION.topics.sort((a, b) => a.name.localeCompare(b.name));
+const pulseLabel = ["", "Quiet week", "Active week", "Very active week"];
+const byId = Object.fromEntries(EDITION.topics.map(t => [t.id, t]));
+const el = (tag, cls, text) => { const n = document.createElement(tag); if (cls) n.className = cls; if (text != null) n.textContent = text; return n; };
+
+document.getElementById("glance").innerHTML = EDITION.glance;
+
+const nums = document.getElementById("numbers");
+EDITION.numbers.forEach(n => {
+  const t = byId[n.s];
+  const box = el("div", "num");
+  box.style.setProperty("--c", `var(${t.c})`);
+  const tag = el("a", "mono tag");
+  tag.href = "#" + t.id; tag.style.color = `var(${t.c})`; tag.style.textDecoration = "none"; tag.textContent = t.name;
+  box.append(tag, el("b", null, n.v), el("p", null, n.t));
+  nums.append(box);
+});
+
+const nav = document.getElementById("nav");
+const topics = document.getElementById("topics");
+EDITION.topics.forEach(t => {
+  const chip = el("a", "chip");
+  chip.href = "#" + t.id; chip.style.setProperty("--c", `var(${t.c})`);
+  chip.append(el("span", "dot"), document.createTextNode(t.name));
+  nav.append(chip);
+
+  const art = el("article", "topic"); art.id = t.id;
+  art.style.setProperty("--c", `var(${t.c})`);
+  const head = el("div", "topic-head");
+  const pulse = el("span", "pulse mono");
+  const bars = el("span", "bars"); bars.setAttribute("aria-hidden", "true");
+  for (let i = 1; i <= 3; i++) { const b = el("i"); if (i <= t.pulse) b.className = "on"; bars.append(b); }
+  pulse.append(bars, document.createTextNode(pulseLabel[t.pulse]));
+  head.append(el("h3", null, t.name), pulse);
+
+  const keys = el("ul", "keys");
+  t.keys.forEach(([w, txt]) => { const li = el("li"); li.append(el("span", "when mono", w), el("span", null, txt)); keys.append(li); });
+
+  const btn = el("button", "more"); btn.type = "button";
+  btn.setAttribute("aria-expanded", "false"); btn.setAttribute("aria-controls", t.id + "-deep");
+  const label = el("span", null, "See more"); const arrow = el("span", "arrow", "▾"); arrow.setAttribute("aria-hidden", "true");
+  btn.append(label, arrow);
+
+  const deep = el("div", "deep"); deep.id = t.id + "-deep"; deep.hidden = true;
+  t.deep.forEach(d => {
+    const blk = el("div"); blk.append(el("h4", null, d.h));
+    if (d.p) blk.append(el("p", null, d.p));
+    if (d.list) { const ul = el("ul"); d.list.forEach(x => ul.append(el("li", null, x))); blk.append(ul); }
+    deep.append(blk);
+  });
+  const why = el("div", "why"); why.append(el("h4", null, "Why it matters"), el("p", null, t.why)); deep.append(why);
+  const src = el("div", "sources"); src.append(el("h4", null, "Sources"));
+  const ol = el("ol");
+  t.sources.forEach(([name, url]) => { const li = el("li"); const a = el("a", null, name); a.href = url; a.target = "_blank"; a.rel = "noopener"; li.append(a); ol.append(li); });
+  src.append(ol); deep.append(src);
+
+  btn.addEventListener("click", () => setOpen(t.id, deep.hidden));
+  art.append(head, el("p", "summary", t.summary), keys, btn, deep);
+  topics.append(art);
+});
+
+function setOpen(id, open) {
+  const deep = document.getElementById(id + "-deep");
+  const btn = document.querySelector(`[aria-controls="${id}-deep"]`);
+  deep.hidden = !open;
+  btn.setAttribute("aria-expanded", String(open));
+  btn.firstChild.textContent = open ? "Show less" : "See more";
+  syncAll();
+}
+const toggleAll = document.getElementById("toggle-all");
+function syncAll() {
+  const allOpen = EDITION.topics.every(t => !document.getElementById(t.id + "-deep").hidden);
+  toggleAll.textContent = allOpen ? "Collapse all analyses" : "Expand all analyses";
+}
+toggleAll.addEventListener("click", () => {
+  const allOpen = EDITION.topics.every(t => !document.getElementById(t.id + "-deep").hidden);
+  EDITION.topics.forEach(t => setOpen(t.id, !allOpen));
+});
+
+const watch = document.getElementById("watch");
+EDITION.watch.forEach(([k, v]) => { const d = el("div"); d.append(el("span", "mono", k), document.createTextNode(v)); watch.append(d); });
+
+// Light / dark toggle: dark by default, choice remembered in this browser only
+const themeBtn = document.getElementById("theme-btn");
+const sunIcon = '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>';
+const moonIcon = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>';
+function applyTheme(mode) {
+  document.documentElement.setAttribute("data-theme", mode);
+  const next = mode === "dark" ? "light" : "dark";
+  themeBtn.innerHTML = (next === "light" ? sunIcon : moonIcon) + `<span>${next === "light" ? "Light" : "Dark"}</span>`;
+  themeBtn.setAttribute("aria-label", `Switch to ${next} mode`);
+}
+let savedTheme = "dark";
+try { savedTheme = localStorage.getItem("investweekly-theme") || "dark"; } catch (e) {}
+applyTheme(savedTheme === "light" ? "light" : "dark");
+themeBtn.addEventListener("click", () => {
+  const mode = document.documentElement.getAttribute("data-theme") === "dark" ? "light" : "dark";
+  applyTheme(mode);
+  try { localStorage.setItem("investweekly-theme", mode); } catch (e) {}
+});
+
+// Open a section's analysis when the link points at it
+const h = location.hash.slice(1);
+if (byId[h]) { setOpen(h, true); document.getElementById(h).scrollIntoView(); }
+</script>
+</body></html>
